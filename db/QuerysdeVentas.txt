@@ -1,0 +1,11 @@
+select * 
+from factura as f
+inner join detalle_factura as df on f.idfactura = df.fkfactura
+inner join producto as p on df.fkproducto =  p.idproducto
+where f.fkestado = 2 AND df.fkestado=2
+
+select f.idfactura, f.fecha_hora, sum(df.total) as total , sum(df.cantidad) as articulos,c.NIT, concat(c.nombre,' ', c.apellido) as cliente 
+from factura as f
+inner join detalle_factura as df on f.idfactura = df.fkfactura
+inner join cliente as c on c.idcliente = f.fkcliente
+where f.fkestado = 2 and df.fkestado = 2

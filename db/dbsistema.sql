@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 11-01-2022 a las 21:39:50
+-- Tiempo de generación: 14-01-2022 a las 19:12:39
 -- Versión del servidor: 10.4.17-MariaDB
 -- Versión de PHP: 8.0.1
 
@@ -50,6 +50,30 @@ INSERT INTO `cliente` (`idcliente`, `NIT`, `nombre`, `apellido`, `direccion`, `c
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `detalle_factura`
+--
+
+CREATE TABLE `detalle_factura` (
+  `iddetalle_factura` int(11) NOT NULL,
+  `cantidad` int(11) NOT NULL,
+  `total` decimal(8,2) NOT NULL,
+  `fkfactura` int(11) NOT NULL,
+  `fkproducto` int(11) NOT NULL,
+  `fkestado` int(11) NOT NULL,
+  `fecha_hora` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `detalle_factura`
+--
+
+INSERT INTO `detalle_factura` (`iddetalle_factura`, `cantidad`, `total`, `fkfactura`, `fkproducto`, `fkestado`, `fecha_hora`) VALUES
+(1, 5, '25.00', 1, 1, 2, '2022-01-14 16:03:12'),
+(2, 1, '20.00', 1, 3, 2, '2022-01-14 16:03:41');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `estado`
 --
 
@@ -73,6 +97,26 @@ INSERT INTO `estado` (`idestado`, `nombre`, `descripcion`, `idpadre`, `fecha_cre
 (5, 'CONTROL DE ESTADOS PARA TABLA USUARIO', 'Esta tabla es utilizada para controlar los estados de las personas, alumnos y usuarios', 0, '2020-10-31 08:32:42'),
 (6, 'Presente', 'Estado presente para alumnos', 5, '2020-10-31 08:33:43'),
 (7, 'Ausente', 'Estado ausente ', 5, '2020-10-31 08:33:43');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `factura`
+--
+
+CREATE TABLE `factura` (
+  `idfactura` int(11) NOT NULL,
+  `fecha_hora` timestamp NOT NULL DEFAULT current_timestamp(),
+  `fkcliente` int(11) NOT NULL,
+  `fkestado` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `factura`
+--
+
+INSERT INTO `factura` (`idfactura`, `fecha_hora`, `fkcliente`, `fkestado`) VALUES
+(1, '2022-01-14 15:51:06', 3, 2);
 
 -- --------------------------------------------------------
 
@@ -249,10 +293,27 @@ ALTER TABLE `cliente`
   ADD KEY `fkestado` (`fkestado`);
 
 --
+-- Indices de la tabla `detalle_factura`
+--
+ALTER TABLE `detalle_factura`
+  ADD PRIMARY KEY (`iddetalle_factura`),
+  ADD KEY `fkestado` (`fkestado`),
+  ADD KEY `fkproducto` (`fkproducto`),
+  ADD KEY `fkfactura` (`fkfactura`);
+
+--
 -- Indices de la tabla `estado`
 --
 ALTER TABLE `estado`
   ADD PRIMARY KEY (`idestado`);
+
+--
+-- Indices de la tabla `factura`
+--
+ALTER TABLE `factura`
+  ADD PRIMARY KEY (`idfactura`),
+  ADD KEY `fkcliente` (`fkcliente`),
+  ADD KEY `fkestado` (`fkestado`);
 
 --
 -- Indices de la tabla `permiso`
@@ -312,10 +373,22 @@ ALTER TABLE `cliente`
   MODIFY `idcliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT de la tabla `detalle_factura`
+--
+ALTER TABLE `detalle_factura`
+  MODIFY `iddetalle_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `estado`
 --
 ALTER TABLE `estado`
   MODIFY `idestado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT de la tabla `factura`
+--
+ALTER TABLE `factura`
+  MODIFY `idfactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `permiso`
@@ -362,6 +435,21 @@ ALTER TABLE `usuario_permiso`
 --
 ALTER TABLE `cliente`
   ADD CONSTRAINT `cliente_ibfk_1` FOREIGN KEY (`fkestado`) REFERENCES `estado` (`idestado`);
+
+--
+-- Filtros para la tabla `detalle_factura`
+--
+ALTER TABLE `detalle_factura`
+  ADD CONSTRAINT `detalle_factura_ibfk_1` FOREIGN KEY (`fkestado`) REFERENCES `estado` (`idestado`),
+  ADD CONSTRAINT `detalle_factura_ibfk_2` FOREIGN KEY (`fkfactura`) REFERENCES `factura` (`idfactura`),
+  ADD CONSTRAINT `detalle_factura_ibfk_3` FOREIGN KEY (`fkproducto`) REFERENCES `producto` (`idproducto`);
+
+--
+-- Filtros para la tabla `factura`
+--
+ALTER TABLE `factura`
+  ADD CONSTRAINT `factura_ibfk_1` FOREIGN KEY (`fkestado`) REFERENCES `estado` (`idestado`),
+  ADD CONSTRAINT `factura_ibfk_2` FOREIGN KEY (`fkcliente`) REFERENCES `cliente` (`idcliente`);
 
 --
 -- Filtros para la tabla `permiso`
